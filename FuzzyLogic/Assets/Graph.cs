@@ -2,10 +2,7 @@
 using System.Collections;
 
 public class Graph : MonoBehaviour {
-
-    protected float max;
-    protected float min;
-    protected float y;
+    protected float y = 0;
 
     // Use this for initialization
     void Start () {
@@ -17,17 +14,7 @@ public class Graph : MonoBehaviour {
 	
 	}
 
-    public virtual float Good(float x)
-    {
-        return y;
-    }
-
-    public virtual float Evil(float x)
-    {
-        return y;
-    }
-
-    public virtual float Grey(float x)
+    public virtual float CheckIfContained(float value)//, float min, float mid, float max)
     {
         return y;
     }
