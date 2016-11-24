@@ -1,7 +1,7 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿//using UnityEngine;
+//using System.Collections;
 
-public class Graph : MonoBehaviour {
+public class Graph {//: MonoBehaviour {
     protected float y = 0;
 
     // Use this for initialization

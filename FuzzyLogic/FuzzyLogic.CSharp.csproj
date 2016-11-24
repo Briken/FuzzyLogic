@@ -84,9 +84,8 @@
     <Compile Include="Assets\Fuzzification.cs" />
     <Compile Include="Assets\Graph.cs" />
     <Compile Include="Assets\GraphManager.cs" />
-    <Compile Include="Assets\LeftShoulderGraphs.cs" />
-    <Compile Include="Assets\Peak.cs" />
-    <Compile Include="Assets\RightShoulderGraph.cs" />
+    <Compile Include="Assets\GraphNamespace.cs" />
+    <Compile Include="Assets\MoralityRuleset.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\SyntaxTree\UnityVS\2015\UnityVS.CSharp.targets" />
 </Project>
