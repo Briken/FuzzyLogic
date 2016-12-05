@@ -5,7 +5,14 @@ using GraphNs;
 
 public class GraphManager : MonoBehaviour {
 
-    float[] centroidDefuz;
+    public float[] defuzConfR;
+    public float[] defuzConfL;
+    public float confSum;
+    public float numerator;
+    public float[] defuzConfM;
+
+    float xMax;
+    float xMin;
 
     //Graph master;
     RightShoulderGraph good;
@@ -24,10 +31,6 @@ public class GraphManager : MonoBehaviour {
     string mAlignment;
     string cAlignment;
 
-    private bool isGood;
-    private bool isEvil;
-    private bool isNeutral;
-
     float fuzzyGood;
     float fuzzyEvil;
     float fuzzyNeutral;
@@ -42,12 +45,9 @@ public class GraphManager : MonoBehaviour {
 	// Use this for initialization
 	void Start ()
     {
-        centroidDefuz = new float[100];
-        for (int x = 0; x < centroidDefuz.GetLength(0); x++)
-        {
-            centroidDefuz[x] = x;
-        }
-        //master = new Graph();
+        xMax = 100;
+        xMin = 0;
+
         good = new RightShoulderGraph(50, 75, 1.0f);
         neutral = new Peak(25, 50, 75, 1.0f);
         evil = new LeftShoulderGraph(25, 50, 1.0f);
@@ -76,10 +76,7 @@ public class GraphManager : MonoBehaviour {
         fuzzyCNeutral = cNeutral.CheckIfContained(chaos);
 
         Debug.Log("This number is held within the good set to " + fuzzyGood*100 + " degree");
-        //if (fuzzyGood > fuzzyEvil &&  fuzzyGood > fuzzyNeutral)
-        //{
-        //    isGood = true;
-        //}
+        
 
         Debug.Log("This number is held within the grey set to " + fuzzyNeutral*100 + " degree");
         //if (fuzzyNeutral > fuzzyGood && fuzzyNeutral > fuzzyEvil)
@@ -98,6 +95,8 @@ public class GraphManager : MonoBehaviour {
         mAlignment = DetermineAlignment(true);
         cAlignment = DetermineAlignment(false);
         Debug.Log("your alignment is " + cAlignment + " " + mAlignment);
+        float nCrisp = DefuzzifyMorality();
+        Debug.Log("new crisp value " + nCrisp.ToString());
     }
 
 
@@ -114,13 +113,61 @@ public class GraphManager : MonoBehaviour {
         return alignment;
     }
 
-    float Defuzzify()
+    float DefuzzifyMorality()
     {
-        foreach (int x in centroidDefuz)
-        {
+        
+        float tLP = (neutral.GetMin() + (neutral.GetMid() - neutral.GetMin()) * fuzzyNeutral);
+        float tRP = (neutral.GetMax() + (neutral.GetMid() - neutral.GetMax()) * fuzzyNeutral);
+        float crispDefuz = 0;
 
-        }
+        Trapezoid defuzPeak = new Trapezoid(25, tLP, tRP, 75, fuzzyNeutral);
+        LeftShoulderGraph defuzL = new LeftShoulderGraph(25, 50, fuzzyEvil);
+        RightShoulderGraph defuzR = new RightShoulderGraph(50, 75, fuzzyGood);
 
-        return 0.0f;
+        float eRepValue;
+        float nRepValue;
+        float gRepValue;
+
+        eRepValue = (defuzL.GetMin() + xMin) / 2;
+        nRepValue = (defuzPeak.GetLMax() + defuzPeak.GetRMin()) / 2;
+        gRepValue = (defuzR.GetMax() + xMax) / 2;
+
+        float numerator = (eRepValue * fuzzyEvil) + (nRepValue * fuzzyNeutral) + (gRepValue * fuzzyGood);
+        float denominator = (fuzzyEvil + fuzzyGood + fuzzyNeutral);
+        crispDefuz = numerator / denominator;
+        return crispDefuz;
+    }
+
+    float DefuzzifyChaos()
+    {
+
+        float lTLP = (lawful.GetMin() + (lawful.GetMid() - lawful.GetMin()) * fuzzyLaw);
+        float lTRP = (lawful.GetMax() + (lawful.GetMid() - lawful.GetMax()) * fuzzyLaw);
+
+        float nTLP = (cNeutral.GetMin() + (cNeutral.GetMid() - cNeutral.GetMin()) * fuzzyCNeutral);
+        float nTRP = (cNeutral.GetMax() + (cNeutral.GetMid() - cNeutral.GetMax()) * fuzzyCNeutral);
+
+        float cTRP = (chaotic.GetMin() + (chaotic.GetMid() - chaotic.GetMin()) * fuzzyChaos);
+        float cTLP = (chaotic.GetMax() + (chaotic.GetMid() - chaotic.GetMax()) * fuzzyChaos);
+
+
+        float crispDefuz = 0;
+
+        Trapezoid lawfulDefuz = new Trapezoid(lawful.GetMin(), lTLP, lTRP, lawful.GetMax(), fuzzyNeutral);
+        Trapezoid chaosDefuz = new Trapezoid(chaotic.GetMin(), cTLP, cTRP, chaotic.GetMax(), fuzzyChaos);
+        Trapezoid cNeutralDefuz = new Trapezoid(cNeutral.GetMin(), nTLP, nTRP, cNeutral.GetMax(), fuzzyCNeutral);
+
+        float lRepValue;
+        float nRepValue;
+        float cRepValue;
+
+        lRepValue = (lawfulDefuz.GetLMax() + lawfulDefuz.GetRMin()) / 2;
+        nRepValue = (cNeutralDefuz.GetLMax() + cNeutralDefuz.GetRMin()) / 2;
+        cRepValue = (chaosDefuz.GetLMax() + chaosDefuz.GetRMin()) / 2;
+
+        float numerator = (lRepValue * fuzzyLaw) + (nRepValue * fuzzyCNeutral) + (cRepValue * fuzzyChaos);
+        float denominator = (fuzzyLaw + fuzzyCNeutral + fuzzyChaos);
+        crispDefuz = numerator / denominator;
+        return crispDefuz;
     }
 }

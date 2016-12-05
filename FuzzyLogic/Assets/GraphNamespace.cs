@@ -28,6 +28,14 @@
             }
             return ((value - min) / (max - min));
         }
+        public float GetMin()
+        {
+            return min;
+        }
+        public float GetMax()
+        {
+            return max;
+        }
     }
 
     public class LeftShoulderGraph : Graph
@@ -57,8 +65,18 @@
                 return 0;
             }
 
-            return 1 - ((value - min) / (max - min));
+            return maxConfidence - ((value - min) / (max - min));
         }
+
+        public float GetMin()
+        {
+            return min;
+        }
+        public float GetMax()
+        {
+            return max;
+        }
+
     }
     public class Peak : Graph
     {
@@ -90,7 +108,19 @@
                 return (value - min) / (mid - min);
             }
 
-            return 1 - ((value - mid) / (max - mid));
+            return maxConfidence - ((value - mid) / (max - mid));
+        }
+        public float GetMin()
+        {
+            return min;
+        }
+        public float GetMax()
+        {
+            return max;
+        }
+        public float GetMid()
+        {
+            return mid;
         }
     }
 
@@ -129,8 +159,25 @@
                 return (value - minLeft) / (maxLeft - minLeft);
             }
 
-            return 1 - ((value - minRight) / (maxRight - minRight));
+            return maxConfidence - ((value - minRight) / (maxRight - minRight));
+        }
+        public float GetLMin()
+        {
+            return minLeft;
+        }
+        public float GetLMax()
+        {
+            return maxLeft;
+        }
+        public float GetRMin()
+        {
+            return minRight;
+        }
+        public float GetRMax()
+        {
+            return maxRight;
         }
 
     }
+
 }
